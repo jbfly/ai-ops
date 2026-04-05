@@ -1,23 +1,13 @@
 #!/bin/bash
+DESKTOP_IP="192.168.1.11"
 
-echo "🛑 Shutting down AI services on Alpha..."
+echo "🛑 SHUTTING DOWN AI..."
+ssh jbfly@$DESKTOP_IP "cd ~/git/ai-ops/alpha && docker compose down"
 
-# 1. Stop the Docker containers (Clean way)
-ssh jbfly@alpha "cd ~/git/ai-ops/alpha && docker compose down"
+# Kill local tunnels on Moon
+echo "✂️  Cutting local tunnels..."
+fuser -k 8080/tcp 2>/dev/null
+fuser -k 2455/tcp 2>/dev/null
 
-# 2. Kill any 'manual' llama-server processes (Just in case!)
-# We use -9 to make sure it releases the GPU memory immediately
-ssh jbfly@alpha "pkill -9 llama-server"
-
-echo "🖥️ Restarting Desktop Environment..."
-# 3. Bring the GUI back
-ssh jbfly@alpha "sudo systemctl start plasmalogin"
-
-echo "✅ Alpha is back to 'Desktop Mode'. GPU is clear."
-
-
-
-
-
-
-
+echo "🖥️  RESTORING DESKTOP..."
+ssh -t jbfly@$DESKTOP_IP "sudo systemctl start plasmalogin"

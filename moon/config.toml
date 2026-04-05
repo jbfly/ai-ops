@@ -1,22 +1,26 @@
- ~/git/ai-ops/moon/config.toml
+# ~/.codex/config.toml
 
-# Global Settings
-model = "gpt-oss-qwen3"
-model_provider = "alpha-blackwell"
-model_context_window = 32768
-model_reasoning_effort = "high"
-
-# The "responses" API bridge to alpha
-[model_providers.alpha-blackwell]
-name = "OpenAI"
-base_url = "http://localhost:2455/v1"
+# Define the local connection to Alpha via the SSH tunnel
+[model_providers.alpha]
+name = "Alpha (Vau Local)"
+base_url = "http://localhost:2455/v1" # Pointing to the codex-proxy tunnel
+env_key = "OPENAI_API_KEY"
 wire_api = "responses"
-env_key = "USER"
 
-# Avoid the 400 error by disabling non-standard tools
-web_search = "disabled"
-mcp_servers = {}
+# Create a profile for your specific AI-Ops workflow
+[profiles.vau-ops]
+model_provider = "alpha"
+model = "gpt-oss-20b" # This must match the --alias in your docker command
+model_context_window = 32768
+web_search = "live"
+file_system_access = "live"
 
-[tui]
-animations = false
-alternate_screen = "never"
+# Tell Codex to default to this profile to bypass the login screen
+default_profile = "vau-ops"
+
+[sandbox]
+# Since you're running locally, this allows Codex to run shell tools without a sandbox
+mode = "danger-full-access" 
+
+[projects."/home/jbfly/ai/codex/test"]
+trust_level = "trusted"
