@@ -1,0 +1,39 @@
+services:
+  llama-server:
+    # Using the official 2026 CUDA 13 image
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda13
+    container_name: llama-brain
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "8080:8080"
+    volumes:
+      - /home/jbfly/ai/models:/models
+    # Arguments passed directly to the llama-server
+    command: >
+      -m /models/Qwen3-Coder-REAP-25B-A3B-MXFP4_MOE.gguf
+      --port 8080 --host 0.0.0.0 -ngl 99 -fa on
+      -c 32768 -ctk q4_0 -ctv q4_0 -np 1
+      --reasoning on --alias "gpt-oss-qwen3"
+    restart: always
+
+  proxy:
+    image: python:3.12-slim
+    container_name: codex-proxy
+    ports:
+      - "2455:2455"
+    environment:
+      - CODEX_LB_UPSTREAM_BASE_URL=http://llama-server:8080/v1
+      - CODEX_LB_MODE=local-proxy
+    command: >
+      sh -c "pip install codex-lb && codex-lb --port 2455"
+    depends_on:
+      - llama-server
+    restart: always
+
