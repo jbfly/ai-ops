@@ -33,6 +33,6 @@ services:
       - CODEX_LB_MODE=proxy
       - CODEX_LB_STRICT_TOOLS=true
       - CODEX_LB_API_KEY_AUTH=false
-      # FIXED: Removed _JSON suffix and added quotes to the string
-      - CODEX_LB_UPSTREAMS='[{"name":"alpha-brain","url":"http://llama-server:8080/v1","type":"openai","enabled":true}]'
+      # Use CODEX_LB_ACCOUNTS to define your brain pool without needing the dashboard
+      - CODEX_LB_ACCOUNTS=[{"name":"alpha-brain","url":"http://llama-server:8080/v1","api_key":"vau-local","models":["gpt-oss-20b"]}]
     restart: always
