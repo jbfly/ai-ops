@@ -33,7 +33,6 @@ services:
       - CODEX_LB_MODE=proxy
       - CODEX_LB_STRICT_TOOLS=true
       - CODEX_LB_API_KEY_AUTH=false
-      # THE 2026 STATELESS FIX: Injecting the brain directly into memory
-      - CODEX_LB_UPSTREAMS_JSON=[{"name":"alpha-brain","url":"http://llama-server:8080/v1","type":"openai","enabled":true}]
+      # FIXED: Removed _JSON suffix and added quotes to the string
+      - CODEX_LB_UPSTREAMS='[{"name":"alpha-brain","url":"http://llama-server:8080/v1","type":"openai","enabled":true}]'
     restart: always
-
