@@ -19,14 +19,13 @@ services:
       -m /models/gpt-oss-20b-mxfp4.gguf
       --port 8080 --host 0.0.0.0
       -ngl 99 --flash-attn on
-      -c 24576 -ctk q4_0 -ctv q4_0
-      --reasoning-format auto
+      -c 16384 -ctk q4_0 -ctv q4_0
       --jinja
-      --chat-template harmony
       --alias "gpt-oss-20b"
     restart: always
+
   proxy:
-    image: python:3.13
+    image: ghcr.io/soju06/codex-lb:latest
     container_name: codex-proxy
     ports:
       - "2455:2455"
@@ -34,12 +33,7 @@ services:
       - CODEX_LB_MODE=proxy
       - CODEX_LB_STRICT_TOOLS=true
       - CODEX_LB_API_KEY_AUTH=false
-      # THE 2026 FIX: Direct JSON injection of your local brain
-      - CODEX_LB_UPSTREAMS=[{"name":"alpha-brain","url":"http://llama-server:8080/v1","type":"openai"}]
-    command: >
-      sh -c "pip install uv &&
-             uv pip install --system git+https://github.com/Soju06/codex-lb.git &&
-             codex-lb --host 0.0.0.0 --port 2455"
-    depends_on:
-      - llama-server
+      # THE 2026 STATELESS FIX: Injecting the brain directly into memory
+      - CODEX_LB_UPSTREAMS_JSON=[{"name":"alpha-brain","url":"http://llama-server:8080/v1","type":"openai","enabled":true}]
     restart: always
+
