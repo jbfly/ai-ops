@@ -1,0 +1,22 @@
+ ~/git/ai-ops/moon/config.toml
+
+# Global Settings
+model = "gpt-oss-qwen3"
+model_provider = "alpha-blackwell"
+model_context_window = 32768
+model_reasoning_effort = "high"
+
+# The "responses" API bridge to alpha
+[model_providers.alpha-blackwell]
+name = "OpenAI"
+base_url = "http://localhost:2455/v1"
+wire_api = "responses"
+env_key = "USER"
+
+# Avoid the 400 error by disabling non-standard tools
+web_search = "disabled"
+mcp_servers = {}
+
+[tui]
+animations = false
+alternate_screen = "never"
