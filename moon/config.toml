@@ -2,7 +2,7 @@
 name = "OpenAI" # Must be exactly this for Codex to parse the URL correctly
 base_url = "http://localhost:8080/v1" # Directly to the 5070 Ti!
 env_key = "OPENAI_API_KEY"
-wire_api = "chat_completions" # Change this from 'responses'
+wire_api = "responses" # Change this from 'responses'
 
 [profiles.vau-ops]
 model_provider = "alpha"
