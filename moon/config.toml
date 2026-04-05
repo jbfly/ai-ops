@@ -10,9 +10,17 @@ base_url = "http://localhost:8080/v1"
 [profiles.oss]
 model = "gpt-oss:20b"
 model_provider = "local"
+model_context_window = 16384
+web_search = "disabled"         # Forcing these off
+file_system_access = "disabled" # Forcing these off
 
-#[sandbox]
-#mode = "disabled" # You can safely leave this on now!
+[sandbox]
+mode = "disabled"               # Killing the bash tool injection
 
 [projects."/home/jbfly/git/ai-ops"]
 trust_level = "trusted"
+
+[projects."/home/jbfly/ai/codex/test"]
+trust_level = "trusted"
+
+
