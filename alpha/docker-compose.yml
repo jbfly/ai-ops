@@ -25,22 +25,21 @@ services:
       --alias "gpt-oss-20b"
     restart: always
 
-  proxy:
+proxy:
     image: python:3.13
     container_name: codex-proxy
     ports:
       - "2455:2455"
     environment:
-      - CODEX_LB_UPSTREAM_BASE_URL=http://llama-server:8080/v1
-      - CODEX_LB_MODE=proxy # Change from 'local-proxy' to 'proxy'
-      - CODEX_LB_UPSTREAM_TYPE=openai # Identifies llama-server as an OpenAI-compatible source
+      - CODEX_LB_MODE=proxy
       - CODEX_LB_STRICT_TOOLS=true
-      - CODEX_LB_AUTO_ADD_UPSTREAM=true # THE FIX: Automatically registers the local backend
-      - CODEX_LB_API_KEY_AUTH=false # Bypasses key checks for your local Vau network
+      - CODEX_LB_API_KEY_AUTH=false
     command: >
       sh -c "pip install uv &&
              uv pip install --system git+https://github.com/Soju06/codex-lb.git &&
+             codex-lb admin add-upstream --name alpha-brain --url http://llama-server:8080/v1 --type openai &&
              codex-lb --host 0.0.0.0 --port 2455"
     depends_on:
       - llama-server
     restart: always
+
