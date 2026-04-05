@@ -25,7 +25,6 @@ services:
       --chat-template harmony
       --alias "gpt-oss-20b"
     restart: always
-
   proxy:
     image: python:3.13
     container_name: codex-proxy
@@ -35,10 +34,11 @@ services:
       - CODEX_LB_MODE=proxy
       - CODEX_LB_STRICT_TOOLS=true
       - CODEX_LB_API_KEY_AUTH=false
+      # THE 2026 FIX: Direct JSON injection of your local brain
+      - CODEX_LB_UPSTREAMS=[{"name":"alpha-brain","url":"http://llama-server:8080/v1","type":"openai"}]
     command: >
       sh -c "pip install uv &&
              uv pip install --system git+https://github.com/Soju06/codex-lb.git &&
-             codex-lb admin add-upstream --name alpha-brain --url http://llama-server:8080/v1 --type openai || true &&
              codex-lb --host 0.0.0.0 --port 2455"
     depends_on:
       - llama-server
