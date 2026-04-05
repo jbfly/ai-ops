@@ -40,7 +40,7 @@ echo -e "\n✅ Brain Online."
 
 echo "🔗 Tunneling 8080 & 2455..."
 ssh -f -N -L 8080:localhost:8080 -L 2455:localhost:2455 jbfly@$DESKTOP_IP
-
+sleep 2 #Give tunnel a moment to handshake
 echo "🚀 Opening Codex TUI..."
 export OPENAI_API_KEY="sk-vau-local" 
 export CODEX_API_BASE="http://localhost:2455/v1"

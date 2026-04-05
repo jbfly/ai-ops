@@ -19,7 +19,7 @@ services:
       --port 8080 --host 0.0.0.0 
       -ngl 99 --flash-attn on
       -c 24576 -ctk q4_0 -ctv q4_0 
-      --reasoning on 
+      --reasoning-format auto
       --jinja
       --chat-template harmony
       --alias "gpt-oss-20b"
