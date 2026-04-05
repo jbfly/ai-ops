@@ -10,7 +10,7 @@ base_url = "http://localhost:8080/v1"
 [profiles.oss]
 model = "gpt-oss:20b"
 model_provider = "local"
-model_context_window = 16384
+model_context_window = 24576
 web_search = "disabled"         # Forcing these off
 file_system_access = "disabled" # Forcing these off
 

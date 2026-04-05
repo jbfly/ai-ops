@@ -19,7 +19,7 @@ services:
       -m /models/gpt-oss-20b-mxfp4.gguf
       --port 8080 --host 0.0.0.0
       -ngl 99 --flash-attn on
-      -c 16384 -ctk q4_0 -ctv q4_0
+      -c 24576 -ctk q4_0 -ctv q4_0
       --jinja
       --alias "gpt-oss:20b"
     restart: always
