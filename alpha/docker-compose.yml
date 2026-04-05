@@ -37,7 +37,7 @@ services:
     command: >
       sh -c "pip install uv &&
              uv pip install --system git+https://github.com/Soju06/codex-lb.git &&
-             codex-lb --port 2455"
+             codex-lb --host 0.0.0.0 --port 2455"
     depends_on:
       - llama-server
     restart: always
