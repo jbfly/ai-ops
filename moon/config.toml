@@ -1,26 +1,18 @@
-# ~/.codex/config.toml
-
-# Define the local connection to Alpha via the SSH tunnel
 [model_providers.alpha]
-name = "Alpha (Vau Local)"
-base_url = "http://localhost:2455/v1" # Pointing to the codex-proxy tunnel
+name = "OpenAI" # Must be exactly this for Codex to parse the URL correctly
+base_url = "http://localhost:8080/v1" # Directly to the 5070 Ti!
 env_key = "OPENAI_API_KEY"
-wire_api = "responses"
 
-# Create a profile for your specific AI-Ops workflow
 [profiles.vau-ops]
 model_provider = "alpha"
-model = "gpt-oss-20b" # This must match the --alias in your docker command
-model_context_window = 32768
+model = "gpt-oss-20b"
+model_context_window = 16384
 web_search = "live"
 file_system_access = "live"
 
-# Tell Codex to default to this profile to bypass the login screen
-default_profile = "vau-ops"
+[default]
+profile = "vau-ops"
 
 [sandbox]
-# Since you're running locally, this allows Codex to run shell tools without a sandbox
-mode = "danger-full-access" 
+mode = "danger-full-access"
 
-[projects."/home/jbfly/ai/codex/test"]
-trust_level = "trusted"

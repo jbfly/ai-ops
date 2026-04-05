@@ -23,17 +23,3 @@ services:
       --jinja
       --alias "gpt-oss-20b"
     restart: always
-
-  proxy:
-    image: ghcr.io/soju06/codex-lb:latest
-    container_name: codex-proxy
-    ports:
-      - "2455:2455"
-    environment:
-      - CODEX_LB_MODE=proxy
-      - CODEX_LB_API_KEY_AUTH=false
-      - CODEX_LB_STRICT_TOOLS=true
-      # THE BYPASS: Force the proxy to ignore accounts and use the brain directly
-      - CODEX_LB_UPSTREAM_URL=http://llama-server:8080/v1
-    restart: always
-
