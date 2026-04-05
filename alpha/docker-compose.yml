@@ -21,5 +21,5 @@ services:
       -ngl 99 --flash-attn on
       -c 16384 -ctk q4_0 -ctv q4_0
       --jinja
-      --alias "gpt-oss:20b" # <-- CHANGED TO MATCH CODEX DOCS
+      --alias "gpt-oss:20b"
     restart: always
