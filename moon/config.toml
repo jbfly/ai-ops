@@ -2,17 +2,21 @@
 name = "OpenAI" # Must be exactly this for Codex to parse the URL correctly
 base_url = "http://localhost:8080/v1" # Directly to the 5070 Ti!
 env_key = "OPENAI_API_KEY"
+wire_api = "chat_completions" # Change this from 'responses'
 
 [profiles.vau-ops]
 model_provider = "alpha"
 model = "gpt-oss-20b"
 model_context_window = 16384
-web_search = "live"
-file_system_access = "live"
+web_search = "disabled"
+file_system_access = "disabled"
 
 [default]
 profile = "vau-ops"
 
 [sandbox]
 mode = "danger-full-access"
+
+[projects."/home/jbfly/git/ai-ops"]
+trust_level = "trusted"
 
