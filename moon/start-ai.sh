@@ -1,17 +1,23 @@
 #!/bin/bash
-# Clear old tunnels
-pkill -f "ssh.*L 2455:localhost:2455"
 
-# Start the tunnel to alpha (Desktop)
-ssh -C -N -L 2455:localhost:2455 jbfly@192.168.1.11 &
+# 1. Kill the Desktop on Alpha to reclaim VRAM
+echo "🌑 Entering Headless Mode on Alpha..."
+ssh jbfly@alpha "sudo systemctl stop plasmalogin"
+
+# 2. Re-establish the tunnel (port 2455 for the proxy)
+echo "🔗 Establishing Blackwell Bridge..."
+ssh -C -N -L 2455:localhost:2455 jbfly@alpha &
 TUNNEL_PID=$!
 
-# Environment tricks for Codex v0.118.0
+# 3. Env vars and Codex
 export USER_TOKEN="vau-local"
 export NOT_REQUIRED="true"
+export USER="jbfly"
 
-echo "🧠 Connecting to 5070 Ti... Launching Codex!"
+echo "🧠 AI Session Active. Press Ctrl+C to finish."
 codex
 
-# Cleanup
+# 4. Cleanup
 kill $TUNNEL_PID
+echo "🌙 Tunnel closed."
+
