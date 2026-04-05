@@ -11,8 +11,8 @@ base_url = "http://localhost:8080/v1"
 model = "gpt-oss:20b"
 model_provider = "local"
 
-[sandbox]
-mode = "danger-full-access" # You can safely leave this on now!
+#[sandbox]
+#mode = "disabled" # You can safely leave this on now!
 
 [projects."/home/jbfly/git/ai-ops"]
 trust_level = "trusted"
