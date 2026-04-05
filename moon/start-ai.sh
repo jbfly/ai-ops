@@ -1,23 +1,22 @@
 #!/bin/bash
 
-# 1. Kill the Desktop on Alpha to reclaim VRAM
-echo "🌑 Entering Headless Mode on Alpha..."
-ssh jbfly@alpha "sudo systemctl stop plasmalogin"
+# 1. Clear any manual models and the Desktop
+echo "🌑 Clearing GPU and entering Headless Mode..."
+ssh jbfly@alpha "pkill -9 llama-server; sudo systemctl stop plasmalogin"
 
-# 2. Re-establish the tunnel (port 2455 for the proxy)
-echo "🔗 Establishing Blackwell Bridge..."
+# 2. Start the Docker containers
+echo "🚀 Launching AI Brain (Docker)..."
+ssh jbfly@alpha "cd ~/git/ai-ops/alpha && docker compose up -d"
+
+# 3. Establish the tunnel
 ssh -C -N -L 2455:localhost:2455 jbfly@alpha &
 TUNNEL_PID=$!
 
-# 3. Env vars and Codex
+# 4. Launch Codex
 export USER_TOKEN="vau-local"
 export NOT_REQUIRED="true"
-export USER="jbfly"
-
-echo "🧠 AI Session Active. Press Ctrl+C to finish."
 codex
 
-# 4. Cleanup
+# 5. Cleanup Tunnel
 kill $TUNNEL_PID
-echo "🌙 Tunnel closed."
-
+echo "🌙 Session finished. Run './stop-ai.sh' to restore the desktop."
