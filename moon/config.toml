@@ -1,22 +1,22 @@
+# ~/.codex/config.toml
+
+disable_response_storage = true
+show_reasoning_content = true
+
 [model_providers.alpha]
-name = "OpenAI" # Must be exactly this for Codex to parse the URL correctly
-base_url = "http://localhost:8080/v1" # Directly to the 5070 Ti!
-env_key = "OPENAI_API_KEY"
-wire_api = "responses" # Change this from 'responses'
+name = "local" # THE MAGIC BULLET: This stops Codex from acting like OpenAI
+base_url = "http://localhost:8080/v1" # Pointing directly to our SSH tunnel
+# Note: No API key or wire_api needed for the 'local' provider!
 
 [profiles.vau-ops]
 model_provider = "alpha"
-model = "gpt-oss-20b"
+model = "gpt-oss-20b" # Matching the alias from your docker-compose
 model_context_window = 16384
-web_search = "disabled"
-file_system_access = "disabled"
+web_search = "live" # You should be able to turn these back on safely now!
+file_system_access = "live"
 
 [default]
 profile = "vau-ops"
 
 [sandbox]
 mode = "danger-full-access"
-
-[projects."/home/jbfly/git/ai-ops"]
-trust_level = "trusted"
-
