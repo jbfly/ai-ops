@@ -3,20 +3,16 @@
 disable_response_storage = true
 show_reasoning_content = true
 
-[model_providers.alpha]
-name = "local" # THE MAGIC BULLET: This stops Codex from acting like OpenAI
-base_url = "http://localhost:8080/v1" # Pointing directly to our SSH tunnel
-# Note: No API key or wire_api needed for the 'local' provider!
+[model_providers.local]
+name = "local"
+base_url = "http://localhost:8080/v1"
 
-[profiles.vau-ops]
-model_provider = "alpha"
-model = "gpt-oss-20b" # Matching the alias from your docker-compose
-model_context_window = 16384
-web_search = "live" # You should be able to turn these back on safely now!
-file_system_access = "live"
-
-[default]
-profile = "vau-ops"
+[profiles.oss]
+model = "gpt-oss:20b"
+model_provider = "local"
 
 [sandbox]
-mode = "danger-full-access"
+mode = "danger-full-access" # You can safely leave this on now!
+
+[projects."/home/jbfly/git/ai-ops"]
+trust_level = "trusted"
