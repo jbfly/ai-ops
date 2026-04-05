@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   llama-server:
     image: ghcr.io/ggml-org/llama.cpp:server-cuda13
@@ -16,16 +17,16 @@ services:
       - /home/jbfly/ai/models:/models
     command: >
       -m /models/gpt-oss-20b-mxfp4.gguf
-      --port 8080 --host 0.0.0.0 
+      --port 8080 --host 0.0.0.0
       -ngl 99 --flash-attn on
-      -c 24576 -ctk q4_0 -ctv q4_0 
+      -c 24576 -ctk q4_0 -ctv q4_0
       --reasoning-format auto
       --jinja
       --chat-template harmony
       --alias "gpt-oss-20b"
     restart: always
 
-proxy:
+  proxy:
     image: python:3.13
     container_name: codex-proxy
     ports:
@@ -37,9 +38,8 @@ proxy:
     command: >
       sh -c "pip install uv &&
              uv pip install --system git+https://github.com/Soju06/codex-lb.git &&
-             codex-lb admin add-upstream --name alpha-brain --url http://llama-server:8080/v1 --type openai &&
+             codex-lb admin add-upstream --name alpha-brain --url http://llama-server:8080/v1 --type openai || true &&
              codex-lb --host 0.0.0.0 --port 2455"
     depends_on:
       - llama-server
     restart: always
-
