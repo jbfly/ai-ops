@@ -9,6 +9,7 @@ show_reasoning_content = true
 [model_providers.local]
 name = "local"
 base_url = "http://localhost:8080/v1"
+api_key = "sk-local-bypass"
 
 [profiles.oss]
 model = "gpt-oss:20b"
