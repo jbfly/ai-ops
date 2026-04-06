@@ -1,5 +1,8 @@
 # ~/.codex/config.toml
 
+[default]
+profile = "oss"
+
 disable_response_storage = true
 show_reasoning_content = true
 
@@ -21,6 +24,9 @@ mode = "disabled"               # Killing the bash tool injection
 trust_level = "trusted"
 
 [projects."/home/jbfly/ai/codex/test"]
+trust_level = "trusted"
+
+[projects."/home/jbfly"]
 trust_level = "trusted"
 
 
