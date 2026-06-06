@@ -1,0 +1,13 @@
+[Unit]
+Description=llama.cpp backend server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jbfly
+ExecStart=/home/jbfly/.config/llama-serve/llama-serve all
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=Mirror AudioMuse queue activity into local GPU ownership
+After=network.target audiomuse-beelink-tunnel.service
+Wants=audiomuse-beelink-tunnel.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/jbfly/.config/llama-serve/audiomuse_watch.py

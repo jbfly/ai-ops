@@ -1,0 +1,13 @@
+[Unit]
+Description=llama.cpp on-demand proxy and GPU arbiter
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jbfly
+ExecStart=/home/jbfly/.config/llama-serve/llama_proxy.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

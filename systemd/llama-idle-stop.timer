@@ -1,0 +1,10 @@
+[Unit]
+Description=Check llama.cpp backend idle timeout
+
+[Timer]
+OnBootSec=5m
+OnUnitActiveSec=5m
+Unit=llama-idle-stop.service
+
+[Install]
+WantedBy=timers.target

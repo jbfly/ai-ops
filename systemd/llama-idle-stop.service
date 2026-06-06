@@ -1,0 +1,6 @@
+[Unit]
+Description=Stop llama.cpp backend after idle timeout
+
+[Service]
+Type=oneshot
+ExecStart=/home/jbfly/.config/llama-serve/idle_stop.py

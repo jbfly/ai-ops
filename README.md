@@ -1,59 +1,38 @@
 # ai-ops
 
-Small two-node workflow for running a remote `llama.cpp` server and driving it from local Codex.
+Local AI operations workspace.
 
-## Topology
+## Current setup
 
-- `alpha/`: remote host ("brain") Docker Compose config for `llama.cpp`.
-- `moon/`: local operator scripts to start/stop the remote stack, create SSH tunnel(s), and launch Codex.
+The active setup is in `llama-serve/`.
 
-## Prerequisites
+Current assumption:
+- the AMD GPU owns desktop graphics
+- the NVIDIA GPU is shared between local `llama.cpp`, AudioMuse analysis, and occasional gaming
 
-- Local machine ("moon"):
-  - Bash, `ssh`, `fuser`, `codex`
-  - Network reachability to remote host
-- Remote machine ("alpha"):
-  - User `jbfly` reachable at `192.168.1.11` via SSH
-  - Docker + Docker Compose
-  - NVIDIA GPU runtime available to Docker
-  - Model file present at `/home/jbfly/ai/models/gpt-oss-20b-mxfp4.gguf`
+Normal client traffic goes to the local proxy on `127.0.0.1:8090`.
+The raw `llama-server` backend stays on `127.0.0.1:8085` and starts only on demand.
 
-## Configuration
+Policy:
+- first client request starts the backend
+- idle timer stops it after the configured quiet period
+- AudioMuse queue activity claims the GPU and stops the backend
+- manual gaming mode can claim the GPU until released
 
-- [`moon/config.toml`](/home/jbfly/git/ai-ops/moon/config.toml) is intended to be symlinked to `~/.codex/config.toml`.
-- The `oss` profile points Codex to the local OpenAI-compatible endpoint:
-  - `base_url = "http://localhost:8080/v1"`
-  - `model = "gpt-oss:20b"`
+Install and wire symlinks:
 
-## Usage
+```bash
+./llama-serve/install.sh
+```
 
-- Start everything:
-  - `bash moon/start-ai.sh`
-- Stop everything:
-  - `bash moon/stop-ai.sh`
+Read these first:
+- `llama-serve/README.md`
+- `docs/llama-arbiter.md`
 
-## What Start Does
+## Archived setups
 
-`moon/start-ai.sh` will:
+Old experiments are kept in `archived/` for reference:
+- `archived/moon/` (old laptop/headless orchestration scripts)
+- `archived/alpha/` (old docker/ollama stack)
 
-1. Kill local process(es) on TCP `8080`.
-2. SSH into `alpha`, stop existing compose stack, and stop several desktop services/processes.
-3. Attempt GPU/process cleanup on the remote host.
-4. Start `alpha/docker-compose.yml`.
-5. Wait for `http://localhost:8080/health` to report `ok`.
-6. Open local SSH tunnel `8080 -> alpha:8080`.
-7. Launch `codex -p oss --dangerously-bypass-approvals-and-sandbox`.
-
-## Safety Notes
-
-- These scripts are environment-specific and currently hard-code:
-  - Remote IP: `192.168.1.11`
-  - Remote user: `jbfly`
-  - Model path and service/process names
-- `start-ai.sh` is operationally aggressive and can disrupt an active desktop session on the remote host.
-- Run this only when you are intentionally switching the remote machine into headless "brain" mode.
-
-## Known Limits
-
-- No CI/test/lint/build workflow is defined in this repo.
-- No multi-user safeguards are currently implemented in scripts.
+These are deprecated. Do not treat them as active code paths.

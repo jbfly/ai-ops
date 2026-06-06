@@ -1,0 +1,10 @@
+[Unit]
+Description=Compatibility wrapper for llama.cpp backend
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --user start llama-server.service
+RemainAfterExit=no
+
+[Install]
+WantedBy=default.target

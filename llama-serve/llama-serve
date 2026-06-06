@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# llama.cpp wrapper for ai-ops llama-serve.
+# Reads model config from ~/.config/llama-serve/active.env.
+# First argument is GPU layers (default: all).
+
+PROFILE_DIR="$HOME/.config/llama-serve"
+ACTIVE_ENV="$PROFILE_DIR/active.env"
+SETTINGS_ENV="$PROFILE_DIR/settings.env"
+LLAMA_DIR="$HOME/git/llama.cpp"
+LLAMA_SERVER="$LLAMA_DIR/build/bin/llama-server"
+
+if [[ -f "$SETTINGS_ENV" ]]; then
+  # shellcheck disable=SC1090
+  source "$SETTINGS_ENV"
+fi
+
+if [[ ! -f "$ACTIVE_ENV" ]]; then
+  echo "error: missing active model env: $ACTIVE_ENV" >&2
+  exit 1
+fi
+
+# shellcheck disable=SC1090
+source "$ACTIVE_ENV"
+
+GPU_LAYERS="${1:-all}"
+MODEL_PATH="${MODEL_PATH:-}"
+MODEL_ALIAS="${MODEL_ALIAS:-gemma4-local}"
+MMPROJ_PATH="${MMPROJ_PATH:-}"
+MMPROJ_OFFLOAD="${MMPROJ_OFFLOAD:-on}"
+CTX_SIZE="${CTX_SIZE:-32768}"
+CHAT_TEMPLATE="${CHAT_TEMPLATE:-google-gemma-4-31B-it.jinja}"
+CACHE_REUSE="${CACHE_REUSE:-256}"
+PARALLEL="${PARALLEL:-1}"
+FLASH_ATTN="${FLASH_ATTN:-auto}"
+BATCH_SIZE="${BATCH_SIZE:-}"
+UBATCH_SIZE="${UBATCH_SIZE:-}"
+CACHE_TYPE_K="${CACHE_TYPE_K:-}"
+CACHE_TYPE_V="${CACHE_TYPE_V:-}"
+REASONING="${REASONING:-off}"
+IMAGE_MIN_TOKENS="${IMAGE_MIN_TOKENS:-}"
+IMAGE_MAX_TOKENS="${IMAGE_MAX_TOKENS:-}"
+EXTRA_ARGS="${EXTRA_ARGS:-}"
+
+if [[ -z "$MODEL_PATH" ]]; then
+  echo "error: MODEL_PATH is not set in $ACTIVE_ENV" >&2
+  exit 1
+fi
+
+CHAT_TEMPLATE_FILE="$LLAMA_DIR/models/templates/$CHAT_TEMPLATE"
+
+if [[ ! -x "$LLAMA_SERVER" ]]; then
+  echo "error: llama-server not found at $LLAMA_SERVER" >&2
+  exit 1
+fi
+
+if [[ ! -f "$CHAT_TEMPLATE_FILE" ]]; then
+  echo "error: chat template not found: $CHAT_TEMPLATE_FILE" >&2
+  exit 1
+fi
+
+LLAMA_BACKEND_HOST="${LLAMA_BACKEND_HOST:-127.0.0.1}"
+LLAMA_BACKEND_PORT="${LLAMA_BACKEND_PORT:-8085}"
+
+args=(
+  --model "$MODEL_PATH"
+  --alias "$MODEL_ALIAS"
+  --host "$LLAMA_BACKEND_HOST"
+  --port "$LLAMA_BACKEND_PORT"
+  --jinja
+  --chat-template-file "$CHAT_TEMPLATE_FILE"
+  --reasoning "$REASONING"
+  --ctx-size "$CTX_SIZE"
+  --gpu-layers "$GPU_LAYERS"
+  --flash-attn "$FLASH_ATTN"
+  --kv-unified
+  --cache-reuse "$CACHE_REUSE"
+  --parallel "$PARALLEL"
+)
+
+if [[ -n "$MMPROJ_PATH" ]]; then
+  args+=(--mmproj "$MMPROJ_PATH")
+  if [[ "$MMPROJ_OFFLOAD" == "off" ]]; then
+    args+=(--no-mmproj-offload)
+  else
+    args+=(--mmproj-offload)
+  fi
+fi
+
+if [[ -n "$BATCH_SIZE" ]]; then
+  args+=(--batch-size "$BATCH_SIZE")
+fi
+
+if [[ -n "$UBATCH_SIZE" ]]; then
+  args+=(--ubatch-size "$UBATCH_SIZE")
+fi
+
+if [[ -n "$CACHE_TYPE_K" ]]; then
+  args+=(--cache-type-k "$CACHE_TYPE_K")
+fi
+
+if [[ -n "$CACHE_TYPE_V" ]]; then
+  args+=(--cache-type-v "$CACHE_TYPE_V")
+fi
+
+if [[ -n "$IMAGE_MIN_TOKENS" ]]; then
+  args+=(--image-min-tokens "$IMAGE_MIN_TOKENS")
+fi
+
+if [[ -n "$IMAGE_MAX_TOKENS" ]]; then
+  args+=(--image-max-tokens "$IMAGE_MAX_TOKENS")
+fi
+
+if [[ -n "$EXTRA_ARGS" ]]; then
+  # shellcheck disable=SC2206
+  extra=( $EXTRA_ARGS )
+  args+=("${extra[@]}")
+fi
+
+exec "$LLAMA_SERVER" "${args[@]}"
