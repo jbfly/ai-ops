@@ -83,7 +83,7 @@ That does four things:
 
 Fish helpers:
 
-- `ai-desktop`: clear manual lock and warm backend
+- `ai-warm`: clear manual lock and warm backend
 - `ai-stop`: stop backend only
 - `ai-game`: reserve GPU for gaming and stop backend
 - `ai-auto`: release manual game lock

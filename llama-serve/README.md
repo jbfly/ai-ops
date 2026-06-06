@@ -1,6 +1,9 @@
 # llama-serve
 
-Local `llama.cpp` control plane.
+Local `llama.cpp` control plane for a two-GPU desktop.
+
+The AMD GPU drives the desktop.
+The NVIDIA GPU is shared between local inference, AudioMuse analysis, and gaming.
 
 ## Layout
 
@@ -9,8 +12,6 @@ Local `llama.cpp` control plane.
 - owner gate: `~/.local/state/llama-serve/gpu-owner`
 
 Normal clients should hit the proxy. The proxy starts the backend on demand, blocks startup when another owner has the GPU, and updates idle state.
-
-The current hardware assumption is that the AMD GPU drives the desktop and the NVIDIA GPU is shared between local inference, AudioMuse analysis, and gaming.
 
 ## Install
 
@@ -58,14 +59,16 @@ To add a model later, copy `models/gemma4.env.example` to a new file and fill in
 
 ## Commands
 
-- `ai-desktop`: warm the backend through the proxy
+- `ai-warm`: clear manual locks and warm the backend through the proxy
 - `ai-stop`: stop backend, keep proxy up
 - `ai-game`: reserve GPU for games and stop backend
 - `ai-auto`: release manual game lock
 - `ai-status`: show service, timer, owner, and VRAM state
+- `ai-model`: list or switch active model profile
 
 ## Notes
 
-- `opencode-serve.service` is independent and can stay running all the time.
-- The compatibility units still exist, but they only start the shared backend service.
-- See `../docs/llama-arbiter.md` for the policy and client wiring.
+- `opencode-serve.service` is independent and can stay running.
+- The old headless/desktop split is archived in `archived/headless-mode/`.
+- See `../docs/llama-arbiter.md` for policy and client wiring.
+- See `../README.md` for hardware assumptions.

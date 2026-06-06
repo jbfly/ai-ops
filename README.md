@@ -2,13 +2,18 @@
 
 Local AI operations workspace.
 
-## Current setup
+## Hardware
 
-The active setup is in `llama-serve/`.
+Two GPUs:
 
-Current assumption:
-- the AMD GPU owns desktop graphics
-- the NVIDIA GPU is shared between local `llama.cpp`, AudioMuse analysis, and occasional gaming
+- AMD GPU: desktop graphics
+- NVIDIA RTX 5070 Ti: shared between local `llama.cpp`, AudioMuse analysis, and gaming
+
+The AMD GPU drives the display. The NVIDIA GPU is managed by the arbiter in `llama-serve/`.
+
+## Setup
+
+The active control plane lives in `llama-serve/`.
 
 Normal client traffic goes to the local proxy on `127.0.0.1:8090`.
 The raw `llama-server` backend stays on `127.0.0.1:8085` and starts only on demand.
@@ -29,10 +34,7 @@ Read these first:
 - `llama-serve/README.md`
 - `docs/llama-arbiter.md`
 
-## Archived setups
+## Deprecated
 
-Old experiments are kept in `archived/` for reference:
-- `archived/moon/` (old laptop/headless orchestration scripts)
-- `archived/alpha/` (old docker/ollama stack)
-
-These are deprecated. Do not treat them as active code paths.
+The old headless-mode experiment and the desktop/headless service split are in `archived/headless-mode/`.
+Those files are kept for reference but are no longer used.

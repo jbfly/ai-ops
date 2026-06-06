@@ -28,15 +28,13 @@ for unit in \
   llama-idle-stop.service \
   llama-idle-stop.timer \
   audiomuse-gpu-watch.service \
-  audiomuse-gpu-watch.timer \
-  llama-server-desktop.service \
-  llama-server-headless.service
+  audiomuse-gpu-watch.timer
  do
   ln -sf "$REPO_SYSTEMD_DIR/$unit" "$SYSTEMD_USER_DIR/$unit"
  done
 
 # Link fish functions.
-for fn in ai-desktop ai-headless ai-stop ai-status ai-model ai-game ai-auto; do
+for fn in ai-warm ai-stop ai-status ai-model ai-game ai-auto; do
   ln -sf "$REPO_LLAMA_DIR/fish/$fn.fish" "$FISH_FUNCTIONS_DIR/$fn.fish"
 done
 
@@ -59,10 +57,10 @@ systemctl --user enable --now llama-proxy.service llama-idle-stop.timer audiomus
 
 echo "installed llama-serve symlinks and systemd units"
 echo "next:"
-echo "  ai-desktop   # warm local model through the proxy"
-echo "  ai-game      # release GPU for gaming"
-echo "  ai-auto      # return to on-demand mode"
-echo "  ai-status    # check proxy/backend/VRAM"
+echo "  ai-warm     # clear manual locks and warm the model"
+echo "  ai-game     # release GPU for gaming"
+echo "  ai-auto     # return to on-demand mode"
+echo "  ai-status   # check proxy/backend/owners"
 
 echo
 read -r -p "remove legacy gemma4 wrapper/env files? [y/N] " cleanup

@@ -15,8 +15,12 @@ function ai-status
     echo "audiomuse watch timer: "(systemctl --user is-active audiomuse-gpu-watch.timer 2>/dev/null)
 
     if command -sq curl
-        echo "proxy status:"
-        curl -fsS http://127.0.0.1:8090/admin/status 2>/dev/null; echo
+        set -l proxy_status (curl -fsS http://127.0.0.1:8090/admin/status 2>/dev/null)
+        if test -n "$proxy_status"
+            echo "proxy status: $proxy_status"
+        else
+            echo "proxy not reachable"
+        end
     end
 
     if command -sq nvidia-smi
