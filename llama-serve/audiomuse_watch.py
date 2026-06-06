@@ -91,17 +91,22 @@ def worker_busy() -> bool:
 
 
 def analysis_pending() -> bool:
+    # Only check queue lengths.  worker_busy() is too fragile over the SSH
+    # tunnel: multiple HGETALL round-trips can misparse and return a false
+    # positive, which causes an unwanted acquire -> stop_backend.
     for queue in ("high", "default"):
         if queue_length(queue) > 0:
             return True
-    return worker_busy()
+    return False
 
 
 def admin_call(action: str) -> None:
     url = f"{proxy_base}/admin/{action}?" + urllib.parse.urlencode({"owner": owner})
     req = urllib.request.Request(url, data=b"{}", method="POST")
+    print(f"audiomuse-watch: calling {url}", file=sys.stderr)
     with urllib.request.urlopen(req, timeout=15) as resp:
-        resp.read()
+        body = resp.read()
+        print(f"audiomuse-watch: {action} -> {resp.status} {body.decode('utf-8','replace')[:200]}", file=sys.stderr)
 
 
 try:

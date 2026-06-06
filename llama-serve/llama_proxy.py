@@ -6,6 +6,7 @@ import json
 import os
 import socket
 import subprocess
+import sys
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -104,10 +105,12 @@ def backend_ready() -> bool:
 def ensure_backend_ready() -> None:
     if backend_ready():
         return
+    print(f"[{time.strftime('%d/%b/%Y %H:%M:%S')}] proxy: starting backend {SERVER_UNIT}", file=sys.stderr)
     start_backend()
     deadline = now_ts() + START_TIMEOUT
     while now_ts() < deadline:
         if backend_ready():
+            print(f"[{time.strftime('%d/%b/%Y %H:%M:%S')}] proxy: backend ready", file=sys.stderr)
             return
         time.sleep(1)
     raise RuntimeError(f"backend did not become ready within {START_TIMEOUT} seconds")
@@ -122,7 +125,7 @@ class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def log_message(self, fmt: str, *args) -> None:
-        print(f"[{self.log_date_time_string()}] {self.address_string()} {fmt % args}")
+        print(f"[{self.log_date_time_string()}] {self.address_string()} {fmt % args}", file=sys.stderr)
 
     def do_GET(self) -> None:
         self.dispatch_request(with_body=False)
@@ -201,6 +204,7 @@ class Handler(BaseHTTPRequestHandler):
             if not owner:
                 self.send_json(400, {"error": "owner is required"})
                 return
+            print(f"[{self.log_date_time_string()}] ADMIN acquire owner={owner}", file=sys.stderr)
             set_owner(owner)
             stop_backend()
             self.send_json(200, {"ok": True, "owner": owner})
@@ -211,6 +215,7 @@ class Handler(BaseHTTPRequestHandler):
             if owner and current and current != owner:
                 self.send_json(409, {"error": f"owner mismatch: {current}"})
                 return
+            print(f"[{self.log_date_time_string()}] ADMIN release owner={owner} current={current}", file=sys.stderr)
             set_owner("")
             self.send_json(200, {"ok": True, "owner": None})
             return
